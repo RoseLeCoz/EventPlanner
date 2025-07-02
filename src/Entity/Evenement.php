@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EvenementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,6 +27,20 @@ class Evenement
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
+
+    #[ORM\ManyToOne(inversedBy: 'evenement')]
+    private ?Utilisateur $utilisateur = null;
+
+    /**
+     * @var Collection<int, commentaire>
+     */
+    #[ORM\OneToMany(targetEntity: commentaire::class, mappedBy: 'evenement')]
+    private Collection $commentaire;
+
+    public function __construct()
+    {
+        $this->commentaire = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +91,48 @@ class Evenement
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?Utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?Utilisateur $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, commentaire>
+     */
+    public function getCommentaire(): Collection
+    {
+        return $this->commentaire;
+    }
+
+    public function addCommentaire(commentaire $commentaire): static
+    {
+        if (!$this->commentaire->contains($commentaire)) {
+            $this->commentaire->add($commentaire);
+            $commentaire->setEvenement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(commentaire $commentaire): static
+    {
+        if ($this->commentaire->removeElement($commentaire)) {
+            // set the owning side to null (unless already changed)
+            if ($commentaire->getEvenement() === $this) {
+                $commentaire->setEvenement(null);
+            }
+        }
 
         return $this;
     }
