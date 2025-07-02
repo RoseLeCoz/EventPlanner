@@ -27,7 +27,10 @@ class Evenement
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
-    
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isPublic = true;
+
     /**
      * @var Collection<int, commentaire>
      */
@@ -129,6 +132,17 @@ class Evenement
             }
         }
 
+        return $this;
+    }
+
+    public function isIsPublic(): bool
+    {
+        return $this->isPublic;
+    }
+
+    public function setIsPublic(bool $isPublic): self
+    {
+        $this->isPublic = $isPublic;
         return $this;
     }
 

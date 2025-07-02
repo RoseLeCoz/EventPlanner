@@ -1,10 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% block title %}Tableau de bord{% endblock %}
 
 {% block body %}
 {# templates/dashboard/index.html.twig #}
 
 <h1>Tableau de bord</h1>
-<p>Bienvenue {{ user.prenom }} !</p>
+<p>Bienvenue {{ utilisateur.nom }} !</p>
+
+<h2>Vos événements</h2>
+
+{% if evenements|length == 0 %}
+    <p>Vous n'avez encore créé aucun événement.</p>
+{% else %}
+    <ul>
+        {% for evenement in evenements %}
+            <li>
+                <strong>{{ evenement.titre }}</strong><br>
+                Le {{ evenement.date|date('d/m/Y H:i') }} à {{ evenement.localisation }}<br>
+                <a href="{{ path('app_event_show', {id: evenement.id}) }}">Voir</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}
