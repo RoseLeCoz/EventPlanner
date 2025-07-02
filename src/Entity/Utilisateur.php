@@ -40,14 +40,28 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     /**
+     * @var Collection<int, Participation>
+     */
+    #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'utilisateur')]
+    private Collection $participation;
+
+    /**
+     * @var Collection<int, Commentaire>
+     */
+    #[ORM\OneToMany(targetEntity: Commentaire::class, mappedBy: 'utilisateur')]
+    private Collection $lesCommentaires;
+
+    /**
      * @var Collection<int, Evenement>
      */
-    #[ORM\OneToMany(targetEntity: Evenement::class, mappedBy: 'Utilisateur')]
-    private Collection $evenement;
+    #[ORM\OneToMany(targetEntity: Evenement::class, mappedBy: 'leUtilisateur')]
+    private Collection $lesEvenements;
 
     public function __construct()
     {
-        $this->evenement = new ArrayCollection();
+        $this->participation = new ArrayCollection();
+        $this->lesCommentaires = new ArrayCollection();
+        $this->lesEvenements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -148,29 +162,89 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Evenement>
+     * @return Collection<int, Participation>
      */
-    public function getEvenement(): Collection
+    public function getParticipation(): Collection
     {
-        return $this->evenement;
+        return $this->participation;
     }
 
-    public function addEvenement(Evenement $evenement): static
+    public function addParticipation(Participation $participation): static
     {
-        if (!$this->evenement->contains($evenement)) {
-            $this->evenement->add($evenement);
-            $evenement->setUtilisateur($this);
+        if (!$this->participation->contains($participation)) {
+            $this->participation->add($participation);
+            $participation->setUtilisateur($this);
         }
 
         return $this;
     }
 
-    public function removeEvenement(Evenement $evenement): static
+    public function removeParticipation(Participation $participation): static
     {
-        if ($this->evenement->removeElement($evenement)) {
+        if ($this->participation->removeElement($participation)) {
             // set the owning side to null (unless already changed)
-            if ($evenement->getUtilisateur() === $this) {
-                $evenement->setUtilisateur(null);
+            if ($participation->getUtilisateur() === $this) {
+                $participation->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commentaire>
+     */
+    public function getLesCommentaires(): Collection
+    {
+        return $this->lesCommentaires;
+    }
+
+    public function addLesCommentaire(Commentaire $lesCommentaire): static
+    {
+        if (!$this->lesCommentaires->contains($lesCommentaire)) {
+            $this->lesCommentaires->add($lesCommentaire);
+            $lesCommentaire->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesCommentaire(Commentaire $lesCommentaire): static
+    {
+        if ($this->lesCommentaires->removeElement($lesCommentaire)) {
+            // set the owning side to null (unless already changed)
+            if ($lesCommentaire->getUtilisateur() === $this) {
+                $lesCommentaire->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Evenement>
+     */
+    public function getLesEvenements(): Collection
+    {
+        return $this->lesEvenements;
+    }
+
+    public function addLesEvenement(Evenement $lesEvenement): static
+    {
+        if (!$this->lesEvenements->contains($lesEvenement)) {
+            $this->lesEvenements->add($lesEvenement);
+            $lesEvenement->setLeUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLesEvenement(Evenement $lesEvenement): static
+    {
+        if ($this->lesEvenements->removeElement($lesEvenement)) {
+            // set the owning side to null (unless already changed)
+            if ($lesEvenement->getLeUtilisateur() === $this) {
+                $lesEvenement->setLeUtilisateur(null);
             }
         }
 

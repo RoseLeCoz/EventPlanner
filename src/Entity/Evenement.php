@@ -27,19 +27,26 @@ class Evenement
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
-
-    #[ORM\ManyToOne(inversedBy: 'evenement')]
-    private ?Utilisateur $utilisateur = null;
-
+    
     /**
      * @var Collection<int, commentaire>
      */
     #[ORM\OneToMany(targetEntity: commentaire::class, mappedBy: 'evenement')]
     private Collection $commentaire;
 
+    /**
+     * @var Collection<int, Participation>
+     */
+    #[ORM\OneToMany(targetEntity: Participation::class, mappedBy: 'evenement')]
+    private Collection $participation;
+
+    #[ORM\ManyToOne(inversedBy: 'lesEvenements')]
+    private ?Utilisateur $leUtilisateur = null;
+
     public function __construct()
     {
         $this->commentaire = new ArrayCollection();
+        $this->participation = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -95,18 +102,6 @@ class Evenement
         return $this;
     }
 
-    public function getUtilisateur(): ?Utilisateur
-    {
-        return $this->utilisateur;
-    }
-
-    public function setUtilisateur(?Utilisateur $utilisateur): static
-    {
-        $this->utilisateur = $utilisateur;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, commentaire>
      */
@@ -133,6 +128,48 @@ class Evenement
                 $commentaire->setEvenement(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Participation>
+     */
+    public function getParticipation(): Collection
+    {
+        return $this->participation;
+    }
+
+    public function addParticipation(Participation $participation): static
+    {
+        if (!$this->participation->contains($participation)) {
+            $this->participation->add($participation);
+            $participation->setEvenement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipation(Participation $participation): static
+    {
+        if ($this->participation->removeElement($participation)) {
+            // set the owning side to null (unless already changed)
+            if ($participation->getEvenement() === $this) {
+                $participation->setEvenement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getLeUtilisateur(): ?Utilisateur
+    {
+        return $this->leUtilisateur;
+    }
+
+    public function setLeUtilisateur(?Utilisateur $leUtilisateur): static
+    {
+        $this->leUtilisateur = $leUtilisateur;
 
         return $this;
     }
